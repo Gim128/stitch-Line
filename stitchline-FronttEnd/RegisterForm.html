@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Register Form</title>
+    <link rel="stylesheet" href="css/boostrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/Registerstyle.css">
+</head>
+<body>
+
+
+<div class="mobile-wrapper" id="wrapper-content">
+
+    <div class="mobile-content" id="mobile-content">
+        <div class="mobile-header">
+            <h4 id="hear">STITCH_LINE</h4>
+        </div>
+        <div class="form__content">
+            <h2>Register</h2>
+            <form>
+                <div class="input-field">
+                    <i class="fas fa-caret-square-down"></i>
+                    <select class="form-select" aria-label="Default select example" id="cmbSignUpRole">
+                        <option selected disabled>Select role</option>
+                        <option value="customer">Customer</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div class="input__row" id="fid">
+                    <label class="id">ID</label>
+                    <input type="text" id="txtid">
+                </div>
+                <div class="input__row" id="fname">
+                    <label class="name">Name</label>
+                    <input type="text" id="txtname">
+                </div>
+                <div class="input__row" id="femail">
+                    <label class="email">Email</label>
+                    <input type="email" id="txtemail">
+                </div>
+                <div class="input__row" id="fmob">
+                    <label class="mobile">Mobile</label>
+                    <input type="text" id="txtmob">
+                </div>
+                <div class="input__row" id="fuser">
+                    <label class="username">UserName</label>
+                    <input type="text" id="txtuser">
+                </div>
+                <div class="input__row" id="fpwd">
+                    <label class="password">Password</label>
+                    <input type="password" id="txtpwd">
+                </div>
+
+                <div class="input__row" id="fnic">
+                    <label class="nic">NIC</label>
+                    <input type="text" id="txtnic">
+                </div>
+
+                <div class="input__row" id="faddress">
+                    <label class="address">Address</label>
+                    <input type="text" id="txtaddress">
+                </div>
+
+                <div class="input__row" id="fEmpNum">
+                    <label class="empno">EMPNO</label>
+                    <input type="text" id="txtemp">
+                </div>
+
+                <div class="btn" id="form-btn">Register</div>
+                <span>or Already Have Account.. <a href="LoginForm.html">Login</a></span>
+            </form>
+        </div>
+        <div class="welcome__content">
+            <div class="welcome__content--header">
+                <h2>WelcomeBack!</h2>
+            </div>
+            <div class="welcome__content--avatar">
+                <img src="asserts/anushka.png" alt="avatar">
+
+            </div>
+            <button class="btn" id="welcome-btn">Login As Chester</button>
+        </div>
+    </div>
+    <div class="yellow-circle" id="circle__1"></div>
+    <div class="purple-circle" id="circle__2"></div>
+    <div class="red-circle" id="circle__3"></div>
+    <div class="blue-circle" id="circle__4"></div>
+    <div class="yellow1-circle" id="circle__5"></div>
+</div>
+
+<script src="js/RegisterForm.js"></script>
+<script src="css/boostrap/js/bootstrap.min.js"></script>
+<script src="css/jQuery/jquery-3.6.0.min.js"></script>
+</body>
+</html>
+
+
+<script>
+
+    $(document).ready(function () {
+        $('#faddress').hide();
+        $('#fnic').hide();
+        $('#fEmpNum').hide();
+    })
+
+    $('#cmbSignUpRole').change(function () {
+        if ($('#cmbSignUpRole').val()==="admin"){
+            $('#fnic').show();
+            $('#fEmpNum').show();
+            $('#faddress').hide();
+        }
+        if ($('#cmbSignUpRole').val()==="customer"){
+            $('#faddress').show();
+            $('#fnic').hide();
+            $('#fEmpNum').hide();
+        }
+    })
+
+    $('#form-btn').click(function () {
+        console.log("btnSignUp Clicked");
+        let userName = $('#txtuser').val();
+        let password = $('#txtpwd').val();
+        let name = $('#txtname').val();
+        let email = $('#txtemail').val();
+        let mobileNumber = $('#txtmob').val();
+        let role = $('#cmbSignUpRole').val();
+        let address = $('#txtaddress').val();
+        let nic = $('#txtnic').val();
+        let empNo = $('#txtemp').val();
+
+        if (role === "admin") {
+            $.ajax({
+                method: "POST",
+                url: USER_PATH,
+                async: true,
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    name: name,
+                    email: email,
+                    mobile: mobileNumber,
+                    userName: userName,
+                    password: password,
+                    role: role,
+                    data: [
+                        {
+                            nic: nic,
+                            empNo: empNo
+                        }
+                    ]
+                }),
+                success: function (data) {
+                    if (data.data.role== Admin){
+                        document.location.href = "AdminDash.html";
+                    }else{
+                        document.location.href = "CustomerDash.html";
+                    }
+                    console.log(data.data);
+                    $.session.set("obj", data.data);
+                    clearForm();
+                }, error: function (data) {
+                    console.log(data.data);
+                    alert("Admin already at the system! Please Login");
+                }
+            });
+        }
+
+        if (role === "customer") {
+            $.ajax({
+                method: "POST",
+                url: USER_PATH,
+                async: true,
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    name: name,
+                    email: email,
+                    mobile: mobileNumber,
+                    userName: userName,
+                    password: password,
+                    role: role,
+                    data: [
+                        {
+                            address: address
+                        }
+                    ]
+                }),
+                success: function (data) {
+                    console.log(data.data);
+                    $.session.set("obj", data.data);
+                    clearForm();
+                }, error: function (data) {
+                    console.log(data.data);
+                    alert("Customer already at the system! Please Login");
+                }
+            });
+        }
+
+    });
+
+    function clearForm() {
+        $('#txtuser').val("");
+        $('#txtpwd').val("");
+        $('#txtname').val("");
+        $('#txtemail').val("");
+        $('#txtmob').val("");
+        $('#cmbSignUpRole').val("");
+        $('#txtaddress').val("");
+        $('#txtnic').val("");
+        $('#txtemp').val("");
+    }
+
+
+
+</script>
